@@ -7,23 +7,35 @@
 
 import { useState } from "react";
 
-const initialItems = [
-  { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "Socks", quantity: 12, packed: false },
-  { id: 3, description: "T-shirt", quantity: 12, packed: true },
-];
+// const initialItems = [
+//   { id: 1, description: "Passports", quantity: 2, packed: false },
+//   { id: 2, description: "Socks", quantity: 12, packed: false },
+//   { id: 3, description: "T-shirt", quantity: 12, packed: true },
+// ];
 
 function App() {
+  const [items, setItems] = useState([]);
+
+  function handleAddItem(item) {
+    setItems((currentItems) => [...currentItems, item]);
+  }
+
+  function handleDeleteItem(id) {
+    console.log(id);
+    setItems((currentItems) =>
+      currentItems.filter((currentItem) => currentItem.id !== id)
+    );
+  }
   return (
     <div className="app">
       {/* 🏝️ App Header */}
       <Logo />
 
       {/* 🧾 Input Form to Add New Items */}
-      <Form />
+      <Form onAddItem={handleAddItem} />
 
       {/* 📋 Packing List Section */}
-      <PackingList />
+      <PackingList items={items} onDeleteItem={handleDeleteItem} />
 
       {/* 📊 Statistics / Summary Footer */}
       <Stats />
@@ -44,7 +56,7 @@ function Logo() {
 // -------------------------------------
 // Displays a form for users to add new items to the packing list.
 // (Interactivity will be added later.)
-function Form() {
+function Form({ onAddItem }) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -60,7 +72,8 @@ function Form() {
       id: Date.now(),
     };
 
-    console.log(newItem);
+    onAddItem(newItem);
+
     setDescription("");
     setQuantity(1);
   }
@@ -93,12 +106,12 @@ function Form() {
 // Displays the list of packing items.
 // Currently renders a static array `initialItems`.
 // Each item is passed down to the <Item /> component.
-function PackingList() {
+function PackingList({ items, onDeleteItem }) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((item) => (
-          <Item item={item} key={item.id} />
+        {items.map((item) => (
+          <Item item={item} key={item.id} onDeleteItem={onDeleteItem} />
         ))}
       </ul>
     </div>
@@ -112,14 +125,14 @@ function PackingList() {
 // - Quantity and description
 // - Strike-through if the item is packed
 // - A ❌ button (to delete later)
-function Item({ item }) {
+function Item({ item, onDeleteItem }) {
   return (
     <li>
       {/* Apply line-through style if item is packed */}
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
-      <button>❌</button>
+      <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
   );
 }
