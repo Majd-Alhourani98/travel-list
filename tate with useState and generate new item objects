@@ -1,0 +1,23 @@
+[33mcommit 718c509f241a5c5220aff112afc33a3414ff4be5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Majd Aldein Alhourani <majd.aldein.alhourani@gmail.com>
+Date:   Mon Nov 3 18:19:53 2025 +0300
+
+    feat: add form inputs and static list rendering for packing items
+
+[33mcommit a16a97c67969e1f24ce808c5686dd7a27cd7ab8f[m
+Author: Majd Aldein Alhourani <majd.aldein.alhourani@gmail.com>
+Date:   Mon Nov 3 18:06:13 2025 +0300
+
+    add static item list
+
+[33mcommit b480ff0935ecf925bba9abe1cc637fa6c940dc08[m
+Author: Majd Aldein Alhourani <majd.aldein.alhourani@gmail.com>
+Date:   Mon Nov 3 17:56:39 2025 +0300
+
+    feat: create app layout structure with Logo, Form, PackingList, and Stats components
+
+[33mcommit f9edb42625a0026ade7522ea59b3017e312a614b[m
+Author: Majd Aldein Alhourani <majd.aldein.alhourani@gmail.com>
+Date:   Mon Nov 3 17:53:16 2025 +0300
+
+    feat: initialize root App component with base structure
