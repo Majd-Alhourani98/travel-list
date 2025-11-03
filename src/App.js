@@ -2,11 +2,16 @@
 // 🧩 Root Component (App.js)
 // -------------------------------------
 // The main entry point of the "Far Away" travel packing list app.
-// It organizes the app layout by combining four subcomponents:
-// Logo, Form, PackingList, and Stats.
+// It manages the state of all packing items and coordinates between
+// four subcomponents: Logo, Form, PackingList, and Stats.
 
 import { useState } from "react";
+import { Form } from "./Form";
+import { PackingList } from "./PackingList";
+import { Stats } from "./Stats";
+import { Logo } from "./Logo";
 
+// Example initial items (commented out - can be used for testing)
 // const initialItems = [
 //   { id: 1, description: "Passports", quantity: 2, packed: false },
 //   { id: 2, description: "Socks", quantity: 12, packed: false },
@@ -14,20 +19,37 @@ import { useState } from "react";
 // ];
 
 function App() {
+  // State to store all packing items
+  // Each item has: { id, description, quantity, packed }
   const [items, setItems] = useState([]);
 
+  /**
+   * Adds a new item to the packing list
+   * @param {Object} item - The new item object with id, description, quantity, and packed status
+   */
   function handleAddItem(item) {
+    // Use functional update to ensure we're working with the latest state
     setItems((currentItems) => [...currentItems, item]);
   }
 
+  /**
+   * Removes an item from the packing list by its ID
+   * @param {number} id - The unique identifier of the item to delete
+   */
   function handleDeleteItem(id) {
     console.log(id);
+    // Filter out the item with the matching ID
     setItems((currentItems) =>
       currentItems.filter((currentItem) => currentItem.id !== id)
     );
   }
 
+  /**
+   * Toggles the packed status of an item
+   * @param {number} id - The unique identifier of the item to toggle
+   */
   function handleToggleItem(id) {
+    // Map through items and flip the packed status for the matching item
     setItems((currentItems) =>
       currentItems.map((item) =>
         item.id === id ? { ...item, packed: !item.packed } : item
@@ -35,7 +57,12 @@ function App() {
     );
   }
 
+  /**
+   * Clears all items from the packing list
+   * Shows a confirmation dialog before clearing
+   */
   function handleClearList() {
+    // Ask for user confirmation before clearing the entire list
     const confirmed = window.confirm("Are you sure you want to delete items?");
     if (items && confirmed) setItems([]);
   }
@@ -59,159 +86,6 @@ function App() {
       {/* 📊 Statistics / Summary Footer */}
       <Stats items={items} />
     </div>
-  );
-}
-
-// -------------------------------------
-// 🪪 Logo Component
-// -------------------------------------
-// Displays the app title with emojis for a friendly vibe.
-function Logo() {
-  return <h1>🌴 Far Away 👜</h1>;
-}
-
-// -------------------------------------
-// 🧾 Form Component
-// -------------------------------------
-// Displays a form for users to add new items to the packing list.
-// (Interactivity will be added later.)
-function Form({ onAddItem }) {
-  const [description, setDescription] = useState("");
-  const [quantity, setQuantity] = useState(1);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    if (!description) return;
-
-    const newItem = {
-      description: description,
-      quantity: quantity,
-      packed: false,
-      id: Date.now(),
-    };
-
-    onAddItem(newItem);
-
-    setDescription("");
-    setQuantity(1);
-  }
-  return (
-    <form className="add-form" onSubmit={handleSubmit}>
-      <h3>What do you need for your 😍 trip?</h3>
-
-      <select onChange={(e) => setQuantity(e.target.value)} value={quantity}>
-        {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-          <option value={num} key={num}>
-            {num}
-          </option>
-        ))}
-      </select>
-
-      <input
-        type="text"
-        placeholder="Item..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <button>Add</button>
-    </form>
-  );
-}
-
-// -------------------------------------
-// 📋 PackingList Component
-// -------------------------------------
-// Displays the list of packing items.
-// Currently renders a static array `initialItems`.
-// Each item is passed down to the <Item /> component.
-function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
-  const [sortBy, setSortBy] = useState("input");
-  let sortedItems;
-
-  if (sortBy === "input") sortedItems = [...items];
-
-  if (sortBy === "description")
-    sortedItems = [...items].sort((a, b) =>
-      a.description.localeCompare(b.description)
-    );
-
-  if (sortBy === "packed")
-    sortedItems = [...items].sort(
-      (a, b) => Number(a.packed) - Number(b.packed)
-    );
-
-  return (
-    <div className="list">
-      <ul>
-        {sortedItems.map((item) => (
-          <Item
-            item={item}
-            key={item.id}
-            onDeleteItem={onDeleteItem}
-            onToggleItem={onToggleItem}
-          />
-        ))}
-      </ul>
-      <div className="actions">
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="input">Sort by input order</option>
-          <option value="description">Sort by description</option>
-          <option value="packed">Sort by packed status</option>
-        </select>
-
-        <button onClick={onClearList}>Clear List</button>
-      </div>
-    </div>
-  );
-}
-
-// -------------------------------------
-// 🎒 Item Component
-// -------------------------------------
-// Displays a single packing item with:
-// - Quantity and description
-// - Strike-through if the item is packed
-// - A ❌ button (to delete later)
-function Item({ item, onDeleteItem, onToggleItem }) {
-  return (
-    <li>
-      <input
-        type="checkbox"
-        checked={item.packed}
-        onChange={() => onToggleItem(item.id)}
-      />
-      {/* Apply line-through style if item is packed */}
-      <span style={item.packed ? { textDecoration: "line-through" } : {}}>
-        {item.quantity} {item.description}
-      </span>
-      <button onClick={() => onDeleteItem(item.id)}>❌</button>
-    </li>
-  );
-}
-
-// -------------------------------------
-// 📊 Stats Component
-// -------------------------------------
-// Displays a footer summary of packing statistics.
-// Will later show how many items are packed vs. total.
-function Stats({ items }) {
-  if (!items.length)
-    return (
-      <p className="stats">
-        <em>Start adding some items to your packing list</em>
-      </p>
-    );
-  const numItems = items.length;
-  const numPacked = items.filter((item) => item.packed).length;
-  const percentage = Math.round((numPacked / numItems) * 100);
-  return (
-    <footer className="stats">
-      <em>
-        👜 You have {numItems} items on your list, and you already packed{" "}
-        {numPacked} ({percentage}%)
-      </em>
-    </footer>
   );
 }
 
