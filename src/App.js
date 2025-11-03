@@ -1,9 +1,15 @@
 // -------------------------------------
 // 🧩 Root Component (App.js)
 // -------------------------------------
-// The main entry component of the "Far Away" travel packing list app.
+// The main entry point of the "Far Away" travel packing list app.
 // It organizes the app layout by combining four subcomponents:
 // Logo, Form, PackingList, and Stats.
+
+const initialItems = [
+  { id: 1, description: "Passports", quantity: 2, packed: false },
+  { id: 2, description: "Socks", quantity: 12, packed: false },
+  { id: 3, description: "T-shirt", quantity: 12, packed: true },
+];
 
 function App() {
   return (
@@ -26,7 +32,7 @@ function App() {
 // -------------------------------------
 // 🪪 Logo Component
 // -------------------------------------
-// Displays the title of the app with fun emojis for personality.
+// Displays the app title with emojis for a friendly vibe.
 function Logo() {
   return <h1>🌴 Far Away 👜</h1>;
 }
@@ -34,8 +40,8 @@ function Logo() {
 // -------------------------------------
 // 🧾 Form Component
 // -------------------------------------
-// Contains the input form where users can add new packing items.
-// (Functionality will be added later.)
+// Displays a form for users to add new items to the packing list.
+// (Interactivity will be added later.)
 function Form() {
   return (
     <form className="add-form">
@@ -47,17 +53,45 @@ function Form() {
 // -------------------------------------
 // 📋 PackingList Component
 // -------------------------------------
-// Placeholder for the list of items the user plans to pack.
-// Will later display items dynamically.
+// Displays the list of packing items.
+// Currently renders a static array `initialItems`.
+// Each item is passed down to the <Item /> component.
 function PackingList() {
-  return <div className="list">LIST</div>;
+  return (
+    <div className="list">
+      <ul>
+        {initialItems.map((item) => (
+          <Item item={item} key={item.id} />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// -------------------------------------
+// 🎒 Item Component
+// -------------------------------------
+// Displays a single packing item with:
+// - Quantity and description
+// - Strike-through if the item is packed
+// - A ❌ button (to delete later)
+function Item({ item }) {
+  return (
+    <li>
+      {/* Apply line-through style if item is packed */}
+      <span style={item.packed ? { textDecoration: "line-through" } : {}}>
+        {item.quantity} {item.description}
+      </span>
+      <button>❌</button>
+    </li>
+  );
 }
 
 // -------------------------------------
 // 📊 Stats Component
 // -------------------------------------
-// Displays travel packing statistics.
-// Will later show how many items are packed and unpacked.
+// Displays a footer summary of packing statistics.
+// Will later show how many items are packed vs. total.
 function Stats() {
   return (
     <footer className="stats">
