@@ -26,6 +26,15 @@ function App() {
       currentItems.filter((currentItem) => currentItem.id !== id)
     );
   }
+
+  function handleToggleItem(id) {
+    setItems((currentItems) =>
+      currentItems.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
+
   return (
     <div className="app">
       {/* 🏝️ App Header */}
@@ -35,10 +44,14 @@ function App() {
       <Form onAddItem={handleAddItem} />
 
       {/* 📋 Packing List Section */}
-      <PackingList items={items} onDeleteItem={handleDeleteItem} />
+      <PackingList
+        items={items}
+        onDeleteItem={handleDeleteItem}
+        onToggleItem={handleToggleItem}
+      />
 
       {/* 📊 Statistics / Summary Footer */}
-      <Stats />
+      <Stats items={items} />
     </div>
   );
 }
@@ -106,12 +119,17 @@ function Form({ onAddItem }) {
 // Displays the list of packing items.
 // Currently renders a static array `initialItems`.
 // Each item is passed down to the <Item /> component.
-function PackingList({ items, onDeleteItem }) {
+function PackingList({ items, onDeleteItem, onToggleItem }) {
   return (
     <div className="list">
       <ul>
         {items.map((item) => (
-          <Item item={item} key={item.id} onDeleteItem={onDeleteItem} />
+          <Item
+            item={item}
+            key={item.id}
+            onDeleteItem={onDeleteItem}
+            onToggleItem={onToggleItem}
+          />
         ))}
       </ul>
     </div>
@@ -125,9 +143,14 @@ function PackingList({ items, onDeleteItem }) {
 // - Quantity and description
 // - Strike-through if the item is packed
 // - A ❌ button (to delete later)
-function Item({ item, onDeleteItem }) {
+function Item({ item, onDeleteItem, onToggleItem }) {
   return (
     <li>
+      <input
+        type="checkbox"
+        checked={item.packed}
+        onChange={() => onToggleItem(item.id)}
+      />
       {/* Apply line-through style if item is packed */}
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
@@ -142,10 +165,22 @@ function Item({ item, onDeleteItem }) {
 // -------------------------------------
 // Displays a footer summary of packing statistics.
 // Will later show how many items are packed vs. total.
-function Stats() {
+function Stats({ items }) {
+  if (!items.length)
+    return (
+      <p className="stats">
+        <em>Start adding some items to your packing list</em>
+      </p>
+    );
+  const numItems = items.length;
+  const numPacked = items.filter((item) => item.packed).length;
+  const percentage = Math.round((numPacked / numItems) * 100);
   return (
     <footer className="stats">
-      <em>👜 You have X items on your list, and you already packed X (x%)</em>
+      <em>
+        👜 You have {numItems} items on your list, and you already packed{" "}
+        {numPacked} ({percentage}%)
+      </em>
     </footer>
   );
 }
